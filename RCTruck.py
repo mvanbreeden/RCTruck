@@ -37,7 +37,7 @@ def turnRight():
 def setNewMotorSpeed(motorSpeed):
 	if leftMotorStarted:
 		motors['left'].setSpeed(motorSpeed)
-    if rightMotorStarted:
+	if rightMotorStarted:
 		motors['right'].setSpeed(motorSpeed)
 
 def rumbleWii():
