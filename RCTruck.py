@@ -5,7 +5,7 @@ import atexit
 import cwiid, time
 
 #version
-version = "MvB0.011"
+version = "MvB0.012"
 
 # create a default object, no changes to I2C address or frequency
 mh = Adafruit_MotorHAT(addr=0x60)
@@ -27,13 +27,13 @@ def turnLeft():
     motors['left'].setSpeed(motorSpeed)
     time.sleep(0.6)
     motors['left'].run(Adafruit_MotorHAT.FORWARD);
-    
+
 def turnRight():
     motors['right'].run(Adafruit_MotorHAT.BACKWARD);
     motors['right'].setSpeed(motorSpeed)
     time.sleep(0.6)
     motors['right'].run(Adafruit_MotorHAT.FORWARD);
-    
+
 def setNewMotorSpeed(motorSpeed):
     if leftMotorStarted:
             motors['left'].setSpeed(motorSpeed)
@@ -44,11 +44,11 @@ def rumbleWii():
     wii.rumble = 1 # NOTE: This is how you RUMBLE the Wiimote
     time.sleep(1)
     wii.rumble = 0
-    
+
 def closeWiiConnection():
     rumbleWii()
-    exit(wii)
-    
+	wii.close()
+
 def startStopMotor(motor):
     if not rightMotorStarted:
           print('Starting right engine')
@@ -59,12 +59,12 @@ def startStopMotor(motor):
           print('Stopping right engine')
           motors['right'].run(Adafruit_MotorHAT.RELEASE);
           rightMotorStarted = False
-    
-    
+
+
 
 #make sure that engines are turned off at any exit
 atexit.register(turnOffMotors)
-    
+
 print('Welcome to RCTruck %s' % version)
 #connect and initiatie Wiimote
 print('Please press buttons 1 + 2 on your Wiimote now ...')
@@ -72,10 +72,11 @@ time.sleep(2)
 
 # This code attempts to connect to your Wiimote and if it fails the program quits
 try:
-  wii=cwiid.Wiimote()
+	global wii
+	wii=cwiid.Wiimote()
 except RuntimeError:
-  print('Cannot connect to your Wiimote. Run again and make sure you are holding buttons 1 + 2!')
-  quit()
+	print('Cannot connect to your Wiimote. Run again and make sure you are holding buttons 1 + 2!')
+	quit()
 
 print('Wiimote connection established!\n')
 rumbleWii()
@@ -105,6 +106,7 @@ while True:
     print('\nClosing connection ...')
     closeWiiConnection()
     turnOffMotors()
+	exit()
 
   # The following code detects whether any of the Wiimotes buttons have been pressed and then prints a statement to the screen!
   if (buttons & cwiid.BTN_LEFT):
@@ -128,7 +130,7 @@ while True:
         print('Top speed reached!')
 
     setNewMotorSpeed(motorSpeed)
-    
+
     time.sleep(button_delay)
 
   # Go Left by switching left engine in backup for 1 second
@@ -153,7 +155,7 @@ while True:
           print('Stopping left engine')
           motors['left'].run(Adafruit_MotorHAT.RELEASE);
           leftMotorStarted = False
-    
+
     time.sleep(button_delay)
 
   if (buttons & cwiid.BTN_2):
@@ -166,7 +168,7 @@ while True:
           print('Stopping right engine')
           motors['right'].run(Adafruit_MotorHAT.RELEASE);
           rightMotorStarted = False
-    
+
     time.sleep(button_delay)
 
   if (buttons & cwiid.BTN_A):
