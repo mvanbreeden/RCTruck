@@ -46,7 +46,7 @@ def rumbleWii():
     wii.rumble = 0
 
 def closeWiiConnection():
-    rumbleWii()
+	rumbleWii()
 	wii.close()
 
 def startStopMotor(motor):
@@ -73,7 +73,7 @@ time.sleep(2)
 # This code attempts to connect to your Wiimote and if it fails the program quits
 try:
 	global wii
-	wii=cwiid.Wiimote()
+	wii = cwiid.Wiimote()
 except RuntimeError:
 	print('Cannot connect to your Wiimote. Run again and make sure you are holding buttons 1 + 2!')
 	quit()
