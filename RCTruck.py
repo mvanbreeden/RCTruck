@@ -5,13 +5,13 @@ import atexit
 import cwiid, time
 
 #version
-version = "MvB0.012"
+version = "MvB0.014"
 
 # create a default object, no changes to I2C address or frequency
 mh = Adafruit_MotorHAT(addr=0x60)
 # define speed
-topSpeed = 255
-startSpeed = 50
+topSpeed = 300
+startSpeed = 40
 #define button delay to prevent doubling
 button_delay = 0.15
 
@@ -23,22 +23,49 @@ def turnOffMotors():
 	#unused mh.getMotor(4).run(Adafruit_MotorHAT.RELEASE)
 
 def turnLeft():
-	motors['left'].run(Adafruit_MotorHAT.BACKWARD);
-	motors['left'].setSpeed(motorSpeed)
-	time.sleep(0.6)
-	motors['left'].run(Adafruit_MotorHAT.FORWARD);
+	if motorSpeed > 0:
+		motors['left'].run(Adafruit_MotorHAT.BACKWARD);
+		motors['left'].setSpeed(motorSpeed)
+		time.sleep(0.3)
+		motors['left'].run(Adafruit_MotorHAT.FORWARD);
+	else:
+		motors['left'].run(Adafruit_MotorHAT.FORWARD);
+                motors['left'].setSpeed(motorSpeed)
+                time.sleep(0.3)
+                motors['left'].run(Adafruit_MotorHAT.BACKWARD);
 
 def turnRight():
-	motors['right'].run(Adafruit_MotorHAT.BACKWARD);
-	motors['right'].setSpeed(motorSpeed)
-	time.sleep(0.6)
-	motors['right'].run(Adafruit_MotorHAT.FORWARD);
+	        if motorSpeed > 0:
+                motors['right'].run(Adafruit_MotorHAT.BACKWARD);
+                motors['right'].setSpeed(motorSpeed)
+                time.sleep(0.3)
+                motors['right'].run(Adafruit_MotorHAT.FORWARD);
+        else:
+                motors['right'].run(Adafruit_MotorHAT.FORWARD);
+                motors['right'].setSpeed(motorSpeed)
+                time.sleep(0.3)
+                motors['right'].run(Adafruit_MotorHAT.BACKWARD);
 
 def setNewMotorSpeed(motorSpeed):
 	if leftMotorStarted:
-		motors['left'].setSpeed(motorSpeed)
+		if motorSpeed > 0:
+			print('Left Going forward')
+			motors['left'].run(Adafruit_MotorHAT.FORWARD)
+		else:
+			print('Left Going backward')
+			motors['left'].run(Adafruit_MotorHAT.BACKWARD)
+
+		motors['left'].setSpeed(abs(motorSpeed))
+
 	if rightMotorStarted:
-		motors['right'].setSpeed(motorSpeed)
+                if motorSpeed > 0:
+			print('Right Going forward')
+                        motors['right'].run(Adafruit_MotorHAT.FORWARD)
+                else:
+			print('Right Going backward')
+                        motors['right'].run(Adafruit_MotorHAT.BACKWARD)
+ 
+		motors['right'].setSpeed(abs(motorSpeed))
 
 def rumbleWii():
 	wii.rumble = 1 # NOTE: This is how you RUMBLE the Wiimote
@@ -106,99 +133,82 @@ while True:
 		turnOffMotors()
 		exit()
 
-		# The following code detects whether any of the Wiimotes buttons have been pressed and then prints a statement to the screen!
-		if (buttons & cwiid.BTN_LEFT):
-			print('Slowing down!')
-			if (motorSpeed >= 0):
-				motorSpeed -= 50
-				print('New speed: %i' % motorSpeed)
-			else:
-				print('Stopped')
-				motorSpeed = 0
+	# The following code detects whether any of the Wiimotes buttons have been pressed and then prints a statement to the screen!
+	if (buttons & cwiid.BTN_LEFT):
+		print('Slowing down!')
+		motorSpeed -= 50
+		print('New speed: %i' % motorSpeed)
 
-			setNewMotorSpeed(motorSpeed)
-			time.sleep(button_delay)
+		setNewMotorSpeed(motorSpeed)
+		time.sleep(button_delay)
 
-		if(buttons & cwiid.BTN_RIGHT):
-			print('Speeding up!')
-			if (motorSpeed <= topSpeed):
-				motorSpeed += 50
-				print('New speed: %i' % motorSpeed)
-			else:
-				print('Top speed reached!')
+	if(buttons & cwiid.BTN_RIGHT):
+		print('Speeding up!')
+		motorSpeed += 50
+		print('New speed: %i' % motorSpeed)
 
-			setNewMotorSpeed(motorSpeed)
-			time.sleep(button_delay)
+		setNewMotorSpeed(motorSpeed)
+		time.sleep(button_delay)
 
-		# Go Left by switching left engine in backup for 1 second
-		if (buttons & cwiid.BTN_UP):
-			print 'Turning left'
-			turnLeft()
-			time.sleep(button_delay)
+	# Go Left by switching left engine in backup for 1 second
+	if (buttons & cwiid.BTN_UP):
+		print 'Turning left'
+		turnLeft()
+		time.sleep(button_delay)
 
-		# Go Right by switching right engine in backup for 1 second
-		if (buttons & cwiid.BTN_DOWN):
-			print 'Turning right'
-			turnRight()
-			time.sleep(button_delay)
+	# Go Right by switching right engine in backup for 1 second
+	if (buttons & cwiid.BTN_DOWN):
+		print 'Turning right'
+		turnRight()
+		time.sleep(button_delay)
 
-		if (buttons & cwiid.BTN_1):
-			if not leftMotorStarted:
-				print('Starting left engine')
-				motors['left'].setSpeed(startSpeed)
-				motors['left'].run(Adafruit_MotorHAT.FORWARD);
-				leftMotorStarted = True
-			else:
-				print('Stopping left engine')
-				motors['left'].run(Adafruit_MotorHAT.RELEASE);
-				leftMotorStarted = False
+	if (buttons & cwiid.BTN_1):
+		if not leftMotorStarted:
+			print('Starting left engine')
+			motors['left'].setSpeed(startSpeed)
+			motors['left'].run(Adafruit_MotorHAT.FORWARD);
+			leftMotorStarted = True
+		else:
+			print('Stopping left engine')
+			motors['left'].run(Adafruit_MotorHAT.RELEASE);
+			leftMotorStarted = False
 
-			time.sleep(button_delay)
+		time.sleep(button_delay)
 
-		if (buttons & cwiid.BTN_2):
-			if not rightMotorStarted:
-				print('Starting right engine')
-				motors['right'].setSpeed(startSpeed)
-				motors['right'].run(Adafruit_MotorHAT.FORWARD);
-				rightMotorStarted = True
-			else:
-				print('Stopping right engine')
-				motors['right'].run(Adafruit_MotorHAT.RELEASE);
-				rightMotorStarted = False
+	if (buttons & cwiid.BTN_2):
+		if not rightMotorStarted:
+			print('Starting right engine')
+			motors['right'].setSpeed(startSpeed)
+			motors['right'].run(Adafruit_MotorHAT.FORWARD);
+			rightMotorStarted = True
+		else:
+			print('Stopping right engine')
+			motors['right'].run(Adafruit_MotorHAT.RELEASE);
+			rightMotorStarted = False
 
-			time.sleep(button_delay)
+		time.sleep(button_delay)
 
-		if (buttons & cwiid.BTN_A):
-			print 'Toettoet!'
-			time.sleep(button_delay)
+	if (buttons & cwiid.BTN_A):
+		print 'Toettoet!'
+		time.sleep(button_delay)
 
-		if (buttons & cwiid.BTN_B):
-			rumbleWii()
-			if not rightMotorStarted:
-				print('Starting right engine')
-				motors['right'].setSpeed(startSpeed)
-				motors['right'].run(Adafruit_MotorHAT.FORWARD);
-				rightMotorStarted = True
-			else:
-				print('Stopping right engine')
-				motors['right'].run(Adafruit_MotorHAT.RELEASE);
-				rightMotorStarted = False
+	if (buttons & cwiid.BTN_B):
+		rumbleWii()
+		time.sleep(button_delay)
 
-			time.sleep(button_delay)
+	if (buttons & cwiid.BTN_HOME):
+		wii.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
+		check = 0
+		while check == 0:
+			print(wii.state['acc'])
+			time.sleep(0.01)
+			check = (buttons & cwiid.BTN_HOME)
+		time.sleep(button_delay)
 
-		if (buttons & cwiid.BTN_HOME):
-			wii.rpt_mode = cwiid.RPT_BTN | cwiid.RPT_ACC
-			check = 0
-			while check == 0:
-				print(wii.state['acc'])
-				time.sleep(0.01)
-				check = (buttons & cwiid.BTN_HOME)
-			time.sleep(button_delay)
+	if (buttons & cwiid.BTN_MINUS):
+		#print 'Left pressed'
+		time.sleep(button_delay)
 
-		if (buttons & cwiid.BTN_MINUS):
-			#print 'Left pressed'
-			time.sleep(button_delay)
-
-		if (buttons & cwiid.BTN_PLUS):
-			#  print 'Right pressed'
-			time.sleep(button_delay)
+	if (buttons & cwiid.BTN_PLUS):
+		#  print 'Right pressed'
+		time.sleep(button_delay)
