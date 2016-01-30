@@ -17,7 +17,7 @@ import atexit
 import cwiid, time
 
 #version
-version = "MvB0.15"
+version = "MvB0.16"
 
 # create a default object, no changes to I2C address or frequency
 mh = Adafruit_MotorHAT(addr=0x60)
@@ -26,6 +26,10 @@ topSpeed = 300
 startSpeed = 40
 #define button delay to prevent doubling
 button_delay = 0.15
+#define motorstates
+motorStarted = { 'left': False, 'right' : False}
+motors = { 'left' : mh.getMotor(1), 'right' : mh.getMotor(2)}
+motorSpeed = 0
 
 # recommended for auto-disabling motors on shutdown!
 def turnOffMotors():
@@ -58,10 +62,10 @@ def setNewMotorSpeed(motorSpeed):
 		motors['left'].setSpeed(abs(motorSpeed))
 
 	if motorStarted['right']:
-        if motorSpeed > 0:
+		if motorSpeed > 0:
 			print('Right Going forward')
 			motors['right'].run(Adafruit_MotorHAT.FORWARD)
-        else:
+		else:
 			print('Right Going backward')
 			motors['right'].run(Adafruit_MotorHAT.BACKWARD)
 
@@ -77,7 +81,7 @@ def closeWiiConnection():
 	wii.close()
 
 def spinTruck(on):
-	if on = True:
+	if on:
 		motors['left'].run(Adafruit_MotorHAT.BACKWARD)
 		motors['right'].run(Adafruit_MotorHAT.FORWARD)
 		motors['left'].setSpeed(topSpeed)
@@ -92,12 +96,12 @@ def spinTruck(on):
 
 def startStopMotor(motor):
 	if not motorStarted[motor]:
-		print('Starting %s engine' & motor)
+		print('Starting %s engine' % motor)
 		motors[motor].setSpeed(startSpeed)
 		motors[motor].run(Adafruit_MotorHAT.FORWARD);
 		motorStarted[motor] = True
 	else:
-		print('Stopping %s engine' & motor)
+		print('Stopping %s engine' % motor)
 		motors[motor].run(Adafruit_MotorHAT.RELEASE);
 		motorStarted[motor] = False
 
@@ -117,15 +121,11 @@ def main():
 	except RuntimeError:
 		print('Cannot connect to your Wiimote. Run again and make sure you are holding buttons 1 + 2!')
 		exit()
-
 	print('Wiimote connection established!\n')
 	rumbleWii()
 	print('Press PLUS and MINUS together to disconnect and quit.\n')
 
 	#Only start the engines when wiimote is connected successfully
-	motors = { 'left' : mh.getMotor(1), 'right' : mh.getMotor(2)}
-	motorStarted = { 'left': False, 'right' : False}
-
 	# turn on left and right motors
 	motors['left'].run(Adafruit_MotorHAT.RELEASE)
 	motors['right'].run(Adafruit_MotorHAT.RELEASE)
@@ -188,7 +188,7 @@ def main():
 			time.sleep(button_delay)
 
 		if (buttons & cwiid.BTN_A):
-			if truckSpinning = True:
+			if truckSpinning:
 				print 'Stopping spinning!'
 				spinTruck(False)
 				truckSpinning = False
