@@ -42,9 +42,9 @@ def turn(direction):
 		motors[direction].run(Adafruit_MotorHAT.FORWARD)
 	else:
 		motors[direction].run(Adafruit_MotorHAT.FORWARD)
-        motors[direction].setSpeed(motorSpeed)
-        time.sleep(0.3)
-        motors[direction].run(Adafruit_MotorHAT.BACKWARD)
+		motors[direction].setSpeed(motorSpeed)
+		time.sleep(0.3)
+		motors[direction].run(Adafruit_MotorHAT.BACKWARD)
 
 def setNewMotorSpeed(motorSpeed):
 	if motorStarted['left']:
@@ -60,7 +60,7 @@ def setNewMotorSpeed(motorSpeed):
 	if motorStarted['right']:
             if motorSpeed > 0:
 				print('Right Going forward')
-                motors['right'].run(Adafruit_MotorHAT.FORWARD)
+				motors['right'].run(Adafruit_MotorHAT.FORWARD)
             else:
 				print('Right Going backward')
                 motors['right'].run(Adafruit_MotorHAT.BACKWARD)
