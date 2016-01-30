@@ -47,7 +47,7 @@ def turn(direction):
         motors[direction].run(Adafruit_MotorHAT.BACKWARD)
 
 def setNewMotorSpeed(motorSpeed):
-	if leftMotorStarted:
+	if motorStarted['left']:
 		if motorSpeed > 0:
 			print('Left Going forward')
 			motors['left'].run(Adafruit_MotorHAT.FORWARD)
@@ -57,7 +57,7 @@ def setNewMotorSpeed(motorSpeed):
 
 		motors['left'].setSpeed(abs(motorSpeed))
 
-	if rightMotorStarted:
+	if motorStarted['right']:
             if motorSpeed > 0:
 				print('Right Going forward')
                 motors['right'].run(Adafruit_MotorHAT.FORWARD)
@@ -127,16 +127,13 @@ def main():
 	motorStarted = { 'left': False, 'right' : False}
 
 	# turn on left and right motors
-	motors['left'].run(Adafruit_MotorHAT.RELEASE);
-
-	motors['right'].run(Adafruit_MotorHAT.RELEASE);
+	motors['left'].run(Adafruit_MotorHAT.RELEASE)
+	motors['right'].run(Adafruit_MotorHAT.RELEASE)
 
 	time.sleep(1)
 
 	wii.rpt_mode = cwiid.RPT_BTN
 
-	leftMotorStarted = False
-	rightMotorStarted = False
 	motorSpeed = startSpeed
 	truckSpinning = False
 
