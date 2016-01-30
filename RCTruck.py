@@ -36,15 +36,15 @@ def turnOffMotors():
 
 def turn(direction):
 	if motorSpeed > 0:
-		motors[direction].run(Adafruit_MotorHAT.BACKWARD);
+		motors[direction].run(Adafruit_MotorHAT.BACKWARD)
 		motors[direction].setSpeed(motorSpeed)
 		time.sleep(0.3)
-		motors[direction].run(Adafruit_MotorHAT.FORWARD);
+		motors[direction].run(Adafruit_MotorHAT.FORWARD)
 	else:
-		motors[direction].run(Adafruit_MotorHAT.FORWARD);
-                motors[direction].setSpeed(motorSpeed)
-                time.sleep(0.3)
-                motors[direction].run(Adafruit_MotorHAT.BACKWARD);
+		motors[direction].run(Adafruit_MotorHAT.FORWARD)
+        motors[direction].setSpeed(motorSpeed)
+        time.sleep(0.3)
+        motors[direction].run(Adafruit_MotorHAT.BACKWARD)
 
 def setNewMotorSpeed(motorSpeed):
 	if leftMotorStarted:
@@ -58,12 +58,12 @@ def setNewMotorSpeed(motorSpeed):
 		motors['left'].setSpeed(abs(motorSpeed))
 
 	if rightMotorStarted:
-                if motorSpeed > 0:
-			print('Right Going forward')
-                        motors['right'].run(Adafruit_MotorHAT.FORWARD)
-                else:
-			print('Right Going backward')
-                        motors['right'].run(Adafruit_MotorHAT.BACKWARD)
+            if motorSpeed > 0:
+				print('Right Going forward')
+                motors['right'].run(Adafruit_MotorHAT.FORWARD)
+            else:
+				print('Right Going backward')
+                motors['right'].run(Adafruit_MotorHAT.BACKWARD)
 
 		motors['right'].setSpeed(abs(motorSpeed))
 
@@ -75,6 +75,20 @@ def rumbleWii():
 def closeWiiConnection():
 	rumbleWii()
 	wii.close()
+
+def spinTruck(on):
+	if on = True:
+		motors['left'].run(Adafruit_MotorHAT.BACKWARD)
+		motors['right'].run(Adafruit_MotorHAT.FORWARD)
+		motors['left'].setSpeed(topSpeed)
+		motors['right'].setSpeed(topSpeed)
+	else:
+		motors['left'].run(Adafruit_MotorHAT.FORWARD)
+		motors['right'].run(Adafruit_MotorHAT.FORWARD)
+		motors['left'].setSpeed(0)
+		motors['right'].setSpeed(0)
+		motorSpeed = 0
+
 
 def startStopMotor(motor):
 	if not motorStarted[motor]:
@@ -124,6 +138,7 @@ def main():
 	leftMotorStarted = False
 	rightMotorStarted = False
 	motorSpeed = startSpeed
+	truckSpinning = False
 
 	while True:
 
@@ -176,7 +191,15 @@ def main():
 			time.sleep(button_delay)
 
 		if (buttons & cwiid.BTN_A):
-			print 'Toettoet!'
+			if truckSpinning = True:
+				print 'Stopping spinning!'
+				spinTruck(False)
+				truckSpinning = False
+			else:
+				print 'Start spinning!'
+				spinTruck(True)
+				truckSpinning = True
+
 			time.sleep(button_delay)
 
 		if (buttons & cwiid.BTN_B):
