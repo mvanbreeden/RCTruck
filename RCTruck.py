@@ -63,9 +63,9 @@ def setNewMotorSpeed(motorSpeed):
 				motors['right'].run(Adafruit_MotorHAT.FORWARD)
             else:
 				print('Right Going backward')
-                motors['right'].run(Adafruit_MotorHAT.BACKWARD)
+				motors['right'].run(Adafruit_MotorHAT.BACKWARD)
 
-		motors['right'].setSpeed(abs(motorSpeed))
+			motors['right'].setSpeed(abs(motorSpeed))
 
 def rumbleWii():
 	wii.rumble = 1 # NOTE: This is how you RUMBLE the Wiimote
